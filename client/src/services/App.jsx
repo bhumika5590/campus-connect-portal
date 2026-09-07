@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+*import { useState, useEffect } from 'react';
 import AuthModule from './components/AuthModule.jsx';
 import StudentPortal from './components/StudentPortal.jsx';
 
@@ -6,15 +6,15 @@ export default function App() {
   const [activeView, setActiveView] = useState('auth');
   const [activeTab, setActiveTab] = useState('login');
 
-  const scrollToAuth = () => {
-    setTimeout(() => {
-      document.getElementById('auth')?.scrollIntoView({
-        behavior: 'smooth'
-      });
-    }, 100);
-  };
-
   useEffect(() => {
+    const scrollToAuth = () => {
+      const authElem = document.getElementById('auth-section');
+
+      if (authElem) {
+        authElem.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
     const handleHashChange = () => {
       const hash = window.location.hash;
 
@@ -31,33 +31,29 @@ export default function App() {
       else if (hash === '#student') {
         setActiveView('student');
       }
-      else {
-        setActiveView('auth');
-        setActiveTab('login');
-      }
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-
+    // Run once when the page loads
     handleHashChange();
 
+    // Listen for URL hash changes
+    window.addEventListener('hashchange', handleHashChange);
+
+    // Cleanup
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, []);
 
   return (
-    <>
-      {activeView === 'auth' && (
-        <AuthModule
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
+    <div style={{ padding: '20px 0' }}>
+      {activeView === 'student' ? (
+        <StudentPortal
+          onBackToHome={() => setActiveView('auth')}
         />
+      ) : (
+        <AuthModule initialMode={activeTab} />
       )}
-
-      {activeView === 'student' && (
-        <StudentPortal />
-      )}
-    </>
+    </div>
   );
-}
+}*
