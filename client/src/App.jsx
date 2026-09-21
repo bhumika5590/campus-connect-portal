@@ -6,57 +6,48 @@ export default function App() {
   const [activeView, setActiveView] = useState('auth');
   const [activeTab, setActiveTab] = useState('login');
 
-  const scrollToAuth = () => {
-    setTimeout(() => {
-      document.getElementById('auth')?.scrollIntoView({
-        behavior: 'smooth'
-      });
-    }, 100);
-  };
-
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
 
-      if (hash === '#login') {
-        setActiveView('auth');
-        setActiveTab('login');
-        scrollToAuth();
-      } 
-      else if (hash === '#register') {
+      if (hash === '#student') {
+        setActiveView('student');
+      } else if (hash === '#register') {
         setActiveView('auth');
         setActiveTab('register');
-        scrollToAuth();
-      } 
-      else if (hash === '#student') {
-        setActiveView('student');
-      }
-      else {
+      } else {
         setActiveView('auth');
         setActiveTab('login');
       }
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-
     handleHashChange();
+
+    window.addEventListener('hashchange', handleHashChange);
 
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, []);
 
+  const goToStudentPortal = () => {
+    window.location.hash = 'student';
+  };
+
+  const goBackToLogin = () => {
+    window.location.hash = 'login';
+  };
+
   return (
     <>
       {activeView === 'auth' && (
-        <AuthModule
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
+        <AuthModule activeTab={activeTab} setActiveTab={setActiveTab} onLoginSuccess={goToStudentPortal} />
       )}
 
       {activeView === 'student' && (
-        <StudentPortal />
+        <StudentPortal
+          onBackToHome={goBackToLogin}
+        />
       )}
     </>
   );

@@ -1,7 +1,12 @@
+
 import React from 'react';
 
-export default function AuthModule({ initialMode = 'login' }) {
-  const [isLogin, setIsLogin] = React.useState(initialMode === 'login');
+export default function AuthModule({
+  activeTab = 'login',
+  setActiveTab,
+  onLoginSuccess
+}) {
+  const isLogin = activeTab === 'login';
 
   const [formData, setFormData] = React.useState({
     name: '',
@@ -21,89 +26,128 @@ export default function AuthModule({ initialMode = 'login' }) {
 
     if (isLogin) {
       alert(`Logging in with: ${formData.email}`);
+
+      // Open Student Portal after login
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
     } else {
       alert(`New Student Registered: ${formData.name}`);
+
+      // After registration, switch to login
+      setActiveTab('login');
     }
   };
 
   return (
-    <div style={styles.cardContainer}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>RV UNIVERSITY</h1>
-        <p style={styles.subtitle}>Excellence in Education</p>
-      </div>
+    <div
+      id="auth"
+      style={styles.page}
+    >
+      <div style={styles.cardContainer}>
 
-      <h2 style={styles.formTitle}>
-        {isLogin ? 'Student Login' : 'Student Registration'}
-      </h2>
+        {/* HEADER */}
+        <div style={styles.header}>
+          <h1 style={styles.title}>RV UNIVERSITY</h1>
+          <p style={styles.subtitle}>Excellence in Education</p>
+        </div>
 
-      <div style={styles.tabContainer}>
-        <button
-          style={isLogin ? styles.activeTab : styles.inactiveTab}
-          onClick={() => setIsLogin(true)}
-        >
-          Login
-        </button>
+        {/* FORM TITLE */}
+        <h2 style={styles.formTitle}>
+          {isLogin ? 'Student Login' : 'Student Registration'}
+        </h2>
 
-        <button
-          style={!isLogin ? styles.activeTab : styles.inactiveTab}
-          onClick={() => setIsLogin(false)}
-        >
-          Register
-        </button>
-      </div>
+        {/* TABS */}
+        <div style={styles.tabContainer}>
+          <button
+            type="button"
+            style={isLogin ? styles.activeTab : styles.inactiveTab}
+            onClick={() => setActiveTab('login')}
+          >
+            Login
+          </button>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        {!isLogin && (
+          <button
+            type="button"
+            style={!isLogin ? styles.activeTab : styles.inactiveTab}
+            onClick={() => setActiveTab('register')}
+          >
+            Register
+          </button>
+        </div>
+
+        {/* FORM */}
+        <form onSubmit={handleSubmit} style={styles.form}>
+
+          {!isLogin && (
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              style={styles.input}
+              required
+            />
+          )}
+
           <input
-            type="text"
-            name="name"
-            placeholder="Full Name"
-            value={formData.name}
+            type="email"
+            name="email"
+            placeholder="RVU Email Address"
+            value={formData.email}
             onChange={handleChange}
             style={styles.input}
             required
           />
-        )}
 
-        <input
-          type="email"
-          name="email"
-          placeholder="RVU Email Address"
-          value={formData.email}
-          onChange={handleChange}
-          style={styles.input}
-          required
-        />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            style={styles.input}
+            required
+          />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          style={styles.input}
-          required
-        />
+          <button
+            type="submit"
+            style={styles.submitBtn}
+          >
+            {isLogin
+              ? 'Sign In to Portal'
+              : 'Create Student Account'}
+          </button>
 
-        <button type="submit" style={styles.submitBtn}>
-          {isLogin ? 'Sign In to Portal' : 'Create Student Account'}
-        </button>
-      </form>
+        </form>
+
+      </div>
     </div>
   );
 }
 
 const styles = {
+  page: {
+    minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f7fa',
+    padding: '30px',
+    boxSizing: 'border-box'
+  },
+
   cardContainer: {
+    width: '100%',
     maxWidth: '400px',
-    margin: '30px auto',
     padding: '30px',
     borderRadius: '8px',
     boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
     backgroundColor: '#ffffff',
     textAlign: 'center',
-    fontFamily: 'Arial, sans-serif'
+    fontFamily: 'Arial, sans-serif',
+    boxSizing: 'border-box'
   },
 
   header: {
@@ -171,7 +215,9 @@ const styles = {
     borderRadius: '4px',
     border: '1px solid #cccccc',
     fontSize: '14px',
-    outline: 'none'
+    outline: 'none',
+    boxSizing: 'border-box',
+    width: '100%'
   },
 
   submitBtn: {
